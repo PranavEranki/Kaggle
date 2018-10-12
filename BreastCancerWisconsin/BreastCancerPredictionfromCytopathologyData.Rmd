@@ -1,6 +1,6 @@
 ---
 title: "Breast Cancer Prediction from Cytopathology Data"
-author: "Gabriel Preda"
+author: "Pranav Eranki"
 date: "(last updated) `r Sys.Date()`"
 output:
   html_document:
@@ -42,7 +42,7 @@ library(xgboost)
 
 
 
-The Breast Cancer (Wisconsin) Diagnosis dataset contains the diagnosis and a set of 30  features describing the 
+The Breast Cancer (Wisconsin) Diagnosis dataset contains the diagnosis and a set of 30  features describing the
 
 characteristics of the cell nuclei present in the digitized image of a of a fine needle aspirate (FNA) of a breast mass.
 
@@ -105,14 +105,14 @@ The category used in both cases will be the **diagnosis**.
 ```{r prerequisite_ggbiplot, code_folding: hide}
 #this Kernel uses ggbiplot from https://github.com/vqv/ggbiplot/
 
-# 
+#
 #  ggscreeplot.r
 
 #
 
 #  Copyright 2011 Vincent Q. Vu.
 
-# 
+#
 
 #  This program is free software; you can redistribute it and/or
 
@@ -140,7 +140,7 @@ The category used in both cases will be the **diagnosis**.
 
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# 
+#
 
 
 
@@ -164,7 +164,7 @@ The category used in both cases will be the **diagnosis**.
 
 #'
 
-ggscreeplot <- function(pcobj, type = c('pev', 'cev')) 
+ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 {
 
@@ -172,9 +172,9 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
   d <- pcobj$sdev^2
 
-  yvar <- switch(type, 
+  yvar <- switch(type,
 
-                 pev = d / sum(d), 
+                 pev = d / sum(d),
 
                  cev = cumsum(d) / sum(d))
 
@@ -192,7 +192,7 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 
 
-  ggplot(data = df, aes(x = PC, y = yvar)) + 
+  ggplot(data = df, aes(x = PC, y = yvar)) +
 
     xlab('principal component number') + ylab(yvar.lab) +
 
@@ -202,7 +202,7 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 
 
-# 
+#
 
 #  ggbiplot.r
 
@@ -210,7 +210,7 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 #  Copyright 2011 Vincent Q. Vu.
 
-# 
+#
 
 #  This program is free software; you can redistribute it and/or
 
@@ -238,7 +238,7 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# 
+#
 
 
 
@@ -296,19 +296,19 @@ ggscreeplot <- function(pcobj, type = c('pev', 'cev'))
 
 #'
 
-ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE, 
+ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
-                      obs.scale = 1 - scale, var.scale = scale, 
+                      obs.scale = 1 - scale, var.scale = scale,
 
-                      groups = NULL, ellipse = FALSE, ellipse.prob = 0.68, 
+                      groups = NULL, ellipse = FALSE, ellipse.prob = 0.68,
 
-                      labels = NULL, labels.size = 3, alpha = 1, 
+                      labels = NULL, labels.size = 3, alpha = 1,
 
-                      var.axes = TRUE, 
+                      var.axes = TRUE,
 
-                      circle = FALSE, circle.prob = 0.69, 
+                      circle = FALSE, circle.prob = 0.69,
 
-                      varname.size = 3, varname.adjust = 1.5, 
+                      varname.size = 3, varname.adjust = 1.5,
 
                       varname.abbrev = FALSE, ...)
 
@@ -410,7 +410,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
 
 
-  # Scale the radius of the correlation circle so that it corresponds to 
+  # Scale the radius of the correlation circle so that it corresponds to
 
   # a data ellipse for the standardized PC scores
 
@@ -442,9 +442,9 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
   # Append the proportion of explained variance to the axis labels
 
-  u.axis.labs <- paste(u.axis.labs, 
+  u.axis.labs <- paste(u.axis.labs,
 
-                       sprintf('(%0.1f%% explained var.)', 
+                       sprintf('(%0.1f%% explained var.)',
 
                                100 * pcobj$sdev[choices]^2/sum(pcobj$sdev^2)))
 
@@ -494,7 +494,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
   # Base plot
 
-  g <- ggplot(data = df.u, aes(x = xvar, y = yvar)) + 
+  g <- ggplot(data = df.u, aes(x = xvar, y = yvar)) +
 
           xlab(u.axis.labs[1]) + ylab(u.axis.labs[2]) + coord_equal()
 
@@ -504,7 +504,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
     # Draw circle
 
-    if(circle) 
+    if(circle)
 
     {
 
@@ -512,7 +512,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
       circle <- data.frame(xvar = r * cos(theta), yvar = r * sin(theta))
 
-      g <- g + geom_path(data = circle, color = muted('white'), 
+      g <- g + geom_path(data = circle, color = muted('white'),
 
                          size = 1/2, alpha = 1/3)
 
@@ -528,7 +528,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
                    aes(x = 0, y = 0, xend = xvar, yend = yvar),
 
-                   arrow = arrow(length = unit(1/2, 'picas')), 
+                   arrow = arrow(length = unit(1/2, 'picas')),
 
                    color = muted('red'))
 
@@ -542,7 +542,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
     if(!is.null(df.u$groups)) {
 
-      g <- g + geom_text(aes(label = labels, color = groups), 
+      g <- g + geom_text(aes(label = labels, color = groups),
 
                          size = labels.size)
 
@@ -592,7 +592,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
       ed <- sqrt(qchisq(ellipse.prob, df = 2))
 
-      data.frame(sweep(circle %*% chol(sigma) * ed, 2, mu, FUN = '+'), 
+      data.frame(sweep(circle %*% chol(sigma) * ed, 2, mu, FUN = '+'),
 
                  groups = x$groups[1])
 
@@ -610,13 +610,13 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
   if(var.axes) {
 
-    g <- g + 
+    g <- g +
 
-    geom_text(data = df.v, 
+    geom_text(data = df.v,
 
-              aes(label = varname, x = xvar, y = yvar, 
+              aes(label = varname, x = xvar, y = yvar,
 
-                  angle = angle, hjust = hjust), 
+                  angle = angle, hjust = hjust),
 
               color = 'darkred', size = varname.size)
 
@@ -626,7 +626,7 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
   # if(!is.null(groups)) {
 
-  #   g <- g + scale_color_brewer(name = deparse(substitute(groups)), 
+  #   g <- g + scale_color_brewer(name = deparse(substitute(groups)),
 
   #                               palette = 'Dark2')
 
@@ -658,25 +658,25 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 
 boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list(span = 0.1),  colv = NULL, alpha = 1, n = 360,...){
 
-  
+
 
   prbs <- c(0.25,0.5,0.75)
 
-  
+
 
   if(is.null(y)){
 
-    stopifnot(ncol(x)==2)	
+    stopifnot(ncol(x)==2)
 
     data <- as.data.frame(x)
 
   }else{
 
-    data <- as.data.frame(cbind(x,y))	
+    data <- as.data.frame(cbind(x,y))
 
   }
 
-  
+
 
   if(is.null(groups)){
 
@@ -688,7 +688,7 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   }
 
-  
+
 
   labs <- names(data)
 
@@ -698,19 +698,19 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   #require(ggplot2)
 
-  
 
-  
+
+
 
   # initiate the smoother
 
   if(is.logical(smooth)){
 
-    do.smooth <- smooth	
+    do.smooth <- smooth
 
   }else{
 
-    do.smooth <- TRUE	
+    do.smooth <- TRUE
 
   }
 
@@ -720,17 +720,17 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
     spec.args <- names(smooth.args)
 
-    
 
-    
+
+
 
     ind <- match(spec.args, poss.args)
 
     for(i in seq_along(ind)){
 
-      formals(smooth)[ind[i]] <- smooth.args[[i]]	
+      formals(smooth)[ind[i]] <- smooth.args[[i]]
 
-    }	
+    }
 
     if("span" %in% poss.args){
 
@@ -744,7 +744,7 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   }
 
-  
+
 
   phi = seq(360/n, 360, 360/n)/180*pi
 
@@ -752,7 +752,7 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   e1$vectors <- cbind(sin(phi),cos(phi))
 
-  
+
 
   ntv <- nlevels(data$groups)
 
@@ -762,17 +762,17 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
     if(ntv == 1){
 
-      colv = 1	
+      colv = 1
 
     }else{
 
-      colv <- rainbow(ntv)	
+      colv <- rainbow(ntv)
 
     }
 
   }
 
-  
+
 
   e1$colv <- colv
 
@@ -780,9 +780,9 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   #colv <- colv[match(groups,levels(as.factor(data$groups)))]
 
-  #e1$gp <- qplot(data$x, data$y, colour = data$groups)	
+  #e1$gp <- qplot(data$x, data$y, colour = data$groups)
 
-  e1$gp <- ggplot(data=data,aes(x=x,y=y,colour=groups))+geom_point(alpha=alpha)	
+  e1$gp <- ggplot(data=data,aes(x=x,y=y,colour=groups))+geom_point(alpha=alpha)
 
   #print(formals(smooth))
 
@@ -796,25 +796,25 @@ boxplot2g = function(x,y=NULL, groups = NULL, smooth = loess, smooth.args = list
 
   }
 
-  #e1$gp <- e1$gp  + opts(legend.position = "none") 
+  #e1$gp <- e1$gp  + opts(legend.position = "none")
 
   return(e1$gp)
 
-  
+
 
 }
 
 groupbox2d = function( x, env, prbs, past, smooth){
 
-  
 
-  grp <- x[1,3]	
 
-  
+  grp <- x[1,3]
+
+
 
   colid <- match(grp, env$lvls)
 
-  
+
 
   if(any(colid)){
 
@@ -822,7 +822,7 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   }else{
 
-    colv <- env$col[1]	
+    colv <- env$col[1]
 
   }
 
@@ -832,11 +832,11 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   xs <-  data.matrix(xs) - rep(mm,each=nrow(xs))
 
-  
+
 
   S <- cov(xs)
 
-  
+
 
   if (requireNamespace("MASS", quietly = TRUE)) {
 
@@ -856,21 +856,21 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
     SSinv <- SSinv$u %*% diag(sqrt(SSinv$d))
 
-    SS <- solve(SSinv)	
+    SS <- solve(SSinv)
 
   }
 
-  
+
 
   xs <- xs %*% SSinv
 
-  
 
-  
+
+
 
   prj <- xs %*% t(env$vectors)
 
-  
+
 
   qut <- t(apply(prj,2, function(z){
 
@@ -910,9 +910,9 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   }
 
-  
 
-  
+
+
 
   ccBox <- env$vectors*qut[,2]
 
@@ -920,19 +920,19 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   md <- sapply(md,mean)+mm		
 
-  
+
 
   md[3] <- grp
 
-  
+
 
   ccWsk <- env$vectors*qut[,1]
 
-  
+
 
   ccc <- data.frame(rbind(ccBox,ccWsk) %*% SS + rep(mm,each=2*nrow(ccBox)))
 
-  
+
 
   ccc$grp <- as.factor(rep(c("box","wsk"),each=nrow(ccBox)))
 
@@ -950,9 +950,9 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   #env$gp <- env$gp + geom_point(x=md[1],y=md[2],colour=md[3])
 
-  env$gp <- env$gp + geom_point(data=md,aes(x=X1,y=X2, colour = groups),size=5) +  scale_colour_manual(values = colv) 
+  env$gp <- env$gp + geom_point(data=md,aes(x=X1,y=X2, colour = groups),size=5) +  scale_colour_manual(values = colv)
 
-  
+
 
   env$gp <- env$gp + geom_path(data=ccc, aes(x=X1,y=X2,group=grp, colour = groups), alpha = 1/8)
 
@@ -964,7 +964,7 @@ groupbox2d = function( x, env, prbs, past, smooth){
 
   return( invisible(TRUE) )
 
-  
+
 
 }
 
@@ -1070,7 +1070,7 @@ featurePlot(x=bc.data, y=bc.diag, plot="density",scales=scales,
 
 
 
-There is no perfect separation between any of the features; we do have fairly good separations for `concave.points_worst`, 
+There is no perfect separation between any of the features; we do have fairly good separations for `concave.points_worst`,
 
 `concavity_worst`, `perimeter_worst`, `area_mean`, `perimeter_mean`. We do have as well tight superposition for some of the values, like `symmetry_se`, `smoothness_se` .Let's represent as well the scatter plot matrix with the pairs.
 
@@ -1095,10 +1095,10 @@ We represent the features pairs, grouped by `mean`, `se` and `worst` attribute.
 newNamesMean = c(
   "fractal_dimension_mean",
   "symmetry_mean",
-  "concave.points_mean", 
+  "concave.points_mean",
   "concavity_mean",
   "compactness_mean",
-  "smoothness_mean", 
+  "smoothness_mean",
   "area_mean",
   "perimeter_mean",
   "texture_mean" ,
@@ -1122,10 +1122,10 @@ featurePlot(x=bcM.data, y=bcM.diag, plot="pairs",scales=scales,
 newNamesSE = c(
   "fractal_dimension_se",
   "symmetry_se",
-  "concave.points_se", 
+  "concave.points_se",
   "concavity_se",
   "compactness_se",
-  "smoothness_se", 
+  "smoothness_se",
   "area_se",
   "perimeter_se",
   "texture_se" ,
@@ -1148,10 +1148,10 @@ featurePlot(x=bcSE.data, y=bcSE.diag, plot="pairs",scales=scales,
 newNamesW = c(
   "fractal_dimension_worst",
   "symmetry_worst",
-  "concave.points_worst", 
+  "concave.points_worst",
   "concavity_worst",
   "compactness_worst",
-  "smoothness_worst", 
+  "smoothness_worst",
   "area_worst",
   "perimeter_worst",
   "texture_worst" ,
@@ -1186,12 +1186,12 @@ nc=ncol(raw.data)
 df <- raw.data[,3:nc-1]
 df$diagnosis <- as.integer(factor(df$diagnosis))-1
 correlations <- cor(df,method="pearson")
-corrplot(correlations, number.cex = .9, method = "square", 
+corrplot(correlations, number.cex = .9, method = "square",
          hclust.method = "ward", order = "FPC",
          type = "full", tl.cex=0.8,tl.col = "black")
 ```
 
-    
+
 
 The highest correlations are between:  
 
@@ -1201,11 +1201,11 @@ The highest correlations are between:
 
 * `perimeter_worst` and `radius_worst`, `perimeter_mean`, `area_worst`, `area_mean`, `radius_mean`;  
 
-* `texture_mean` and `texture_worst`; 
+* `texture_mean` and `texture_worst`;
 
 
 
-Let's show the plots for some of these highly correlated features. We will use **boxplot2g**, showing the scatter plot 
+Let's show the plots for some of these highly correlated features. We will use **boxplot2g**, showing the scatter plot
 
 (in the two dimmensions given by the selected features) for the clustered data (grouped by diagnosis), over which are
 
@@ -1292,11 +1292,11 @@ We can observe low correlated features that have in the same time a considerable
 
 overlap for the two `M` and `B` groups (ex: `fractal_dimension_worst` and `area_se`)
 
-as well as low correlated features that have in the same time a good selectivity 
+as well as low correlated features that have in the same time a good selectivity
 
 for `M` and `B` groups (ex: `perimeter_worst`and  `fractal_dimension_se`)
 
-         
+
 
 
 
@@ -1324,7 +1324,7 @@ box()
 
 We represent the data projected in the plane of the two principal components. The direction of the features are as well
 
-represented in the same plane. Two elipses are showing the 0.68 probability boundary for the distribution of the two 
+represented in the same plane. Two elipses are showing the 0.68 probability boundary for the distribution of the two
 
 groups of `diagnosis`, `B` and `M`. A circle superposed over the scatter plot data helps to evaluate the relative ratio
 
@@ -1332,17 +1332,17 @@ between the features in the most important principal components plane.
 
 The features with highest dimmensions or aligned with the leading principal component are the ones with highest variance.
 
- 
+
 
 
 
 
 
 ```{r fig.width=8, fig.height=8, plot_pca, message=FALSE}
-ggbiplot(bc.pca, choices=1:2, obs.scale = 1, var.scale = 1, groups = bc.diag, 
+ggbiplot(bc.pca, choices=1:2, obs.scale = 1, var.scale = 1, groups = bc.diag,
   ellipse = TRUE, circle = TRUE, varname.size = 3, ellipse.prob = 0.68, circle.prob = 0.69) +
-  scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() + 
-  labs(title = "Principal Component Analysis", 
+  scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() +
+  labs(title = "Principal Component Analysis",
   subtitle = "1. Data distribution in the plan of PC1 and PC2\n2. Directions of components in the same plane") +
   theme(legend.direction = 'horizontal', legend.position = 'bottom')
 ```
@@ -1359,13 +1359,13 @@ Let's see also the projection of the data in the {PC3, PC4} and {PC5, PC6} Princ
 
 ```{r fig.width=8, fig.height=4, plot_pca_pc3456, message=FALSE}
 
-pc34<- ggbiplot(bc.pca, choices=3:4, obs.scale = 1, var.scale = 1, groups = bc.diag, 
+pc34<- ggbiplot(bc.pca, choices=3:4, obs.scale = 1, var.scale = 1, groups = bc.diag,
 
         ellipse = TRUE, circle = TRUE, varname.size = 3, ellipse.prob = 0.68, circle.prob = 0.69) +
 
-        scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() + 
+        scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() +
 
-        labs(title = "Principal Component Analysis", 
+        labs(title = "Principal Component Analysis",
 
         subtitle = "1. Data distribution in the plan of PC3 and PC4\n2. Directions of components in the same plane") +
 
@@ -1373,13 +1373,13 @@ pc34<- ggbiplot(bc.pca, choices=3:4, obs.scale = 1, var.scale = 1, groups = bc.d
 
 
 
-pc56<- ggbiplot(bc.pca, choices=5:6, obs.scale = 1, var.scale = 1, groups = bc.diag, 
+pc56<- ggbiplot(bc.pca, choices=5:6, obs.scale = 1, var.scale = 1, groups = bc.diag,
 
         ellipse = TRUE, circle = TRUE, varname.size = 3, ellipse.prob = 0.68, circle.prob = 0.69) +
 
-        scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() + 
+        scale_color_discrete(name = 'Diagnosis (B: beningn, M: malignant)') + theme_bw() +
 
-        labs(title = "Principal Component Analysis", 
+        labs(title = "Principal Component Analysis",
 
         subtitle = "1. Data distribution in the plan of PC5 and PC6\n2. Directions of components in the same plane") +
 
@@ -1395,7 +1395,7 @@ grid.arrange(pc34, pc56, ncol=2)
 
 Principal components PC3-PC6 are explaining together 25.5% variation.
 
-We can observe that not only there are no significant alignment of a certain feature with one of the PC3:PC6 principal 
+We can observe that not only there are no significant alignment of a certain feature with one of the PC3:PC6 principal
 
 components but also in the planes {PC3, PC4} and {PC5,PC6} the `B` and `M` points are not separated in distinct clusters, like
 
@@ -1447,7 +1447,7 @@ text(tsne$Y, labels=bc.diag, cex=0.5, col=colors[bc.diag])
 
 
 
-We will use four models, `RandomForest` (`RF`), `Gradient Boosting Machine` (`GBM`), 
+We will use four models, `RandomForest` (`RF`), `Gradient Boosting Machine` (`GBM`),
 
 `Light Gradient Boosting Machine` (`lightGBM`) and `XGBoost`.
 
@@ -1529,7 +1529,7 @@ plot(trainset.rf, main="Random Forest: MSE error vs. no of trees")
 
 
 
-Let's visualize the variable importance with two methods, **IncNodePurity** and **%IncMSE**. **IncNodePurity** is the total decrease in node impurities, measured by the Gini Index from splitting on the variable, averaged over all trees. **%IncMSE** 
+Let's visualize the variable importance with two methods, **IncNodePurity** and **%IncMSE**. **IncNodePurity** is the total decrease in node impurities, measured by the Gini Index from splitting on the variable, averaged over all trees. **%IncMSE**
 
 is the increase in mse of predictions as a result of variable **j** being permuted(values randomly shuffled).
 
@@ -1551,7 +1551,7 @@ varimp <- data.frame(trainset.rf$importance)
 
   labs(title="Prediction using RandomForest with 500 trees", subtitle="Variable importance (IncNodePurity)", x="Variable", y="Variable importance (IncNodePurity)")
 
-  
+
 
   vi2 <- ggplot(varimp, aes(x=reorder(rownames(varimp),X.IncMSE), y=X.IncMSE)) +
 
@@ -1571,7 +1571,7 @@ grid.arrange(vi1, vi2, ncol=2)
 
 
 
-We observe that `perimeter_worst`, `area_worst`, `concave.points_worst`, `radius_worst`, `concavity_mean`, `concavity_worst`, 
+We observe that `perimeter_worst`, `area_worst`, `concave.points_worst`, `radius_worst`, `concavity_mean`, `concavity_worst`,
 
 `area_se`, `concave.points_mean` are the most important features. Most of them are also in the list of features with
 
@@ -1613,7 +1613,7 @@ plotConfusionMatrix <- function(testset, sSubtitle) {
 
     cf[opts][cf[opts]==1] <- "Malignant"
 
-    
+
 
     ggplot(data =  cf, mapping = aes(x = True, y = Predicted)) +
 
@@ -1633,7 +1633,7 @@ plotConfusionMatrix <- function(testset, sSubtitle) {
 
 plotConfusionMatrix(testset,"Prediction using RandomForest with 500 trees")
 
-  
+
 
 ```
 
@@ -1661,11 +1661,11 @@ only the ones with the highest importance, according to *%IncMSE* criteria.
 
 ```{r model_prediction_random_forest_reduced_features_set}
 
-features_list = c("perimeter_worst", "area_worst", "concave.points_worst", "radius_worst", 
+features_list = c("perimeter_worst", "area_worst", "concave.points_worst", "radius_worst",
 
                   "concavity_mean", "concavity_worst","area_se", "concave.points_mean",
 
-                  "texture_worst", "area_mean", "texture_mean", "area_mean", 
+                  "texture_worst", "area_mean", "texture_mean", "area_mean",
 
                   "radius_mean", "radius_se", "perimeter_mean", "perimeter_se",
 
@@ -1719,15 +1719,15 @@ print(sprintf("Area under curve (AUC) : %.3f",auc(testset_fl$diagnosis, testset_
 
 We reduced the number of features to `22` out of `33`, by selecting only the most
 
-important, according to the  feature importance evaluation using previous Random Forest 
+important, according to the  feature importance evaluation using previous Random Forest
 
 model. If we consider detection of a malignant tumor as a `positive` test, the result of
 
-using reduced features set is an decrease of the true positive (**TP**) number and increase 
+using reduced features set is an decrease of the true positive (**TP**) number and increase
 
-of false negative (**FP**) number, while true negative and false positive numbers are 
+of false negative (**FP**) number, while true negative and false positive numbers are
 
-unchanged. The AUC decreased as well to `0.940` due to decrease of sensitivity and 
+unchanged. The AUC decreased as well to `0.940` due to decrease of sensitivity and
 
 change as well of the selectivity.
 
@@ -1773,7 +1773,7 @@ gbmCV = gbm(formula = gbm.form,
 
 
 
-In order to find the best number of trees to use for the prediction for the test data, we can use `gbm.perf` function. 
+In order to find the best number of trees to use for the prediction for the test data, we can use `gbm.perf` function.
 
 This function returns the optimal number of trees for prediction.
 
@@ -1999,7 +1999,7 @@ dMtest <- xgb.DMatrix(as.matrix(testset %>% select(-diagnosis,-predicted)), labe
 
 
 
-We set the XGBoost parameters for the model. We will use a binary logistic  objective function. 
+We set the XGBoost parameters for the model. We will use a binary logistic  objective function.
 
 The evaluation metric will be AUC (Area under curve). We start with $\eta$ = 0.012, `subsample`=0.8, `max_depth`=8,
 
@@ -2053,7 +2053,7 @@ printEveryN = 100
 
 model_xgb.cv <- xgb.cv(params=params,
 
-                      data = dMtrain, 
+                      data = dMtrain,
 
                       maximize = TRUE,
 
@@ -2077,15 +2077,15 @@ n <- nrow(d)
 
 v <- model_xgb.cv$best_iteration
 
-df <- data.frame(x=rep(d$iter, 2), val=c(d$train_auc_mean, d$test_auc_mean), 
+df <- data.frame(x=rep(d$iter, 2), val=c(d$train_auc_mean, d$test_auc_mean),
 
                    set=rep(c("train", "test"), each=n))
 
-ggplot(data = df, aes(x=x, y=val)) + 
+ggplot(data = df, aes(x=x, y=val)) +
 
-  geom_line(aes(colour=set)) + 
+  geom_line(aes(colour=set)) +
 
-  geom_vline(xintercept=v) + 
+  geom_vline(xintercept=v) +
 
   theme_bw() +
 
@@ -2105,7 +2105,7 @@ have close values. Both are above 0.99.
 
 model_xgb <- xgboost(params=params,
 
-                      data = dMtrain, 
+                      data = dMtrain,
 
                       maximize = TRUE,
 
@@ -2117,7 +2117,7 @@ model_xgb <- xgboost(params=params,
 
                       print_every_n=printEveryN)
 
-                      
+
 
 d <- model_xgb$evaluation_log
 
@@ -2125,9 +2125,9 @@ n <- nrow(d)
 
 df <- data.frame(x=rep(d$iter), val=d$train_auc)
 
-ggplot(data = df, aes(x=x, y=val)) + 
+ggplot(data = df, aes(x=x, y=val)) +
 
-  geom_line() + 
+  geom_line() +
 
   theme_bw() +
 
@@ -2177,15 +2177,15 @@ print(sprintf("Area under curve (AUC) : %.3f",auc(testset$diagnosis, testset$pre
 
 
 
-The feature analysis show that there are few features with more predictive value for the diagnosis. The observations were 
+The feature analysis show that there are few features with more predictive value for the diagnosis. The observations were
 
-confirmed by the PCA analysis, showing that the same features are aligned to main principal component or have larger dimmension in the PCA plan.These features are `concave.ponts_worst`, `concavity_mean`, `concavity_worst`, `perimeter_worst`, 
+confirmed by the PCA analysis, showing that the same features are aligned to main principal component or have larger dimmension in the PCA plan.These features are `concave.ponts_worst`, `concavity_mean`, `concavity_worst`, `perimeter_worst`,
 
 `area_worst`.
 
 We were able to predict with good accuracy (big ROC AUC value) the malignant and benign tumors based on the four models used, `Random Forest`,
 
-`Gradient Boosting Machine (GBM)`, `Light Gradient Boosting Machine (lightGBM)` and `XGBoost`. For the `GBM`, `lightGBM` and `XGBoost` models 
+`Gradient Boosting Machine (GBM)`, `Light Gradient Boosting Machine (lightGBM)` and `XGBoost`. For the `GBM`, `lightGBM` and `XGBoost` models
 
 we were also using cross validation to decide the best model. The best prediction was obtained using `GBM` model.
 
@@ -2206,5 +2206,3 @@ we were also using cross validation to decide the best model. The best predictio
 [5]  GBM Tutorial  [http://allstate-university-hackathons.github.io/PredictionChallenge2016/GBM](http://allstate-university-hackathons.github.io/PredictionChallenge2016/GBM)  
 
 [6] ligbtGBM and XGBoost parameters, [https://sites.google.com/view/lauraepp/parameters](https://sites.google.com/view/lauraepp/parameters)  
-
-
